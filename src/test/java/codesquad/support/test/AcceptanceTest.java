@@ -16,5 +16,9 @@ public abstract class AcceptanceTest {
     public TestRestTemplate template() {
         return template;
     }
+
+    public TestRestTemplate templateWithNormalUser() {
+        return template().withBasicAuth("javajigi@woowahan.com", "password");
+    }
 }
 
