@@ -9,14 +9,16 @@ function $_value(selector) {
 function fetchManager({url, method, body, headers, callback}) {
     fetch(url, {method, body, headers, credentials: "same-origin"})
         .then((response) => {
-            const value = response;
-            if(value.status == 200) {
-                return;
-            } else {
-                return value.json();
-            }
-
-        }).then((result) => {
-            callback(result);
+            callback(response);
     });
+}
+
+function postData({url, body, callback}) {
+    fetchManager({
+        url: url,
+        method: "POST",
+        body: JSON.stringify(body),
+        headers: {"content-type": "application/json"},
+        callback: callback
+    })
 }

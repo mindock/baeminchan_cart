@@ -18,19 +18,23 @@ public class ApiCartController {
 
     @GetMapping("")
     public ResponseEntity<CartDTO> listCart(HttpSession session) {
+        if(!SessionUtils.isCartExisted(session)) {
+            return new ResponseEntity<>(new CartDTO(), HttpStatus.OK);
+        }
         return new ResponseEntity<>(SessionUtils.getCartInSession(session).toDTO(), HttpStatus.OK);
     }
 
     @PostMapping("/{productId}")
-    public ResponseEntity<CartDTO> addCartProduct(@RequestBody CartProductDTO cartProductDTO, HttpSession session) {
+    public ResponseEntity<Integer> addCartProduct(@RequestBody CartProductDTO cartProductDTO, HttpSession session) {
+        log.debug("[add Cart] productId: {}, quantity: {}", cartProductDTO.getProductId(), cartProductDTO.getQuantity());
         Cart cart;
         if(!SessionUtils.isCartExisted(session)) {
             cart = Cart.fromDTO(cartProductDTO);
             SessionUtils.setCartInSession(session, cart);
-            return new ResponseEntity<>(cart.toDTO(), HttpStatus.OK);
+            return new ResponseEntity<>(1, HttpStatus.OK);
         }
         cart = SessionUtils.getCartInSession(session);
-        return new ResponseEntity<>(cart.addProduct(cartProductDTO), HttpStatus.OK);
+        return new ResponseEntity<>(cart.addProduct(cartProductDTO).getProducts().size(), HttpStatus.OK);
 }
 
     @PutMapping("/{productId}")
